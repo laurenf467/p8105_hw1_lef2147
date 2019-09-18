@@ -1,0 +1,75 @@
+---
+title: "p8105_hw1_lef2147"
+author: Lauren Franks, lef2147
+output: github_document
+---
+
+Question 1: create a df with a random sample size of 8 from a normal distribution, a logical vector indicating whether elements of the sample are greater than 0, a character vector of length 8, a factor vector of length 8 with 3 different factor “levels”
+```{r}
+library(tidyverse)
+
+df_1 = tibble(
+  pr1_rand = rnorm(8),
+  pr1_log = pr1_rand > 0,
+  pr1_char = "Hi there",
+  pr1_fact = factor(c(1, 2, 3, 2, 3, 1, 2, 1))
+)
+```
+
+Taking the mean of each variables in the dataframe
+```{r, warning=FALSE}
+mean(pull(df_1, pr1_rand))
+mean(pull(df_1, pr1_log))
+mean(pull(df_1, pr1_char))
+mean(pull(df_1, pr1_fact))
+```
+R is only able to calculate the mean for variable pr1_rand and pr1_log because they are either numeric or logical. R is not able to calculate a mean for a character variable or factor variable because there are no associated numbers with character or factor variables.
+
+```{r, eval=FALSE}
+as.numeric(pull(df_1,pr1_log))
+as.numeric(pull(df_1,pr1_char))
+as.numeric(pull(df_1,pr1_fact))
+```
+This output explains what happens when you take the mean for the logical variable, it sums the zeros and 1s and divides by 8. This also explains why there is an error message for the character variable.
+
+
+```{r}
+as.numeric(pull(df_1, pr1_log)) * pull(df_1, pr1_rand)
+as.factor(pull(df_1, pr1_log)) * pull(df_1, pr1_rand)
+as.numeric(as.factor(pull(df_1, pr1_log)))
+```
+
+Problem 2
+A numeric vector created by coercing the above logical vector
+A factor vector created by coercing the above logical vector
+```{r}
+df_2 = tibble(
+  x = rnorm(500),
+  y = rnorm(500),
+  pr2_log = x + y > 1,
+  pr2_num = as.numeric(pr2_log),
+  pr2_fac = as.factor(pr2_log)
+)
+
+```
+The size of the dataframe `df_2` is `r nrow(df_2)` rows and `r ncol(df_2)` columns. The mean of the datafram is `r round(mean(pull(df_2, x)), digits = 2)`, the median is `r round(median(pull(df_2, x)), digits = 2)`, and the standard deviation is `r round(sd(pull(df_2, x)), digits = 2)`. The proportion of cases which x + y > 1 is `r sum(pull(df_2, pr2_log))/500`.
+
+```{r}
+plot_1 = ggplot(df_2, aes(x = x, y = y, color = 'red')) + geom_point()
+
+ggplot(df_2, aes(x = x, y = y, color = factor(pull(df_2, pr2_num)))) + geom_point()
+
+ggplot(df_2, aes(x = x, y = y, color = factor(pull(df_2, pr2_fac)))) + geom_point()
+```
+The scatterplots are being colored the same way regardless if you use pr2_fac or pr2_num. This is because they are essentially transmitting the same information, the numeric variable is transmitting information via "1" and "0" whereas the factor variable is using TRUE and FALSE. 
+
+Saving plot_1
+```{r}
+ggsave("plot_1.png")
+```
+
+
+
+
+
+
